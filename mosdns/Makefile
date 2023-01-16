@@ -43,3 +43,4 @@ endef
 
 $(eval $(call GoBinPackage,mosdns))
 $(eval $(call BuildPackage,mosdns))
+
