@@ -107,7 +107,7 @@ adblock.default = false
 adblock = s:option(Value, "ad_source", translate("ADblock Source"))
 adblock:depends("adblock", "1")
 adblock.default = "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-domains.txt"
-adblock:value("geosite.dat", "v2ray-geosite")
+adblock:value("https://github.com/MartialBE/v2dat_rule/releases/latest/download/geosite_category-ads-all.txt", "v2ray-geosite")
 adblock:value("https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-domains.txt", "anti-AD")
 adblock:value("https://raw.githubusercontent.com/sjhgvr/oisd/main/dbl_basic.txt", "oisd (basic)")
 adblock:value("https://raw.githubusercontent.com/QiuSimons/openwrt-mos/master/dat/serverlist.txt", "QiuSimons/openwrt-mos")

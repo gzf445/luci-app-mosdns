@@ -67,16 +67,16 @@ geodat_update() (
 	geodat_download() (
 		google_status=$(curl -I -4 -m 3 -o /dev/null -s -w %{http_code} http://www.google.com/generate_204)
 		[ "$google_status" -ne "204" ] && mirror="https://ghproxy.com/"
-		echo -e "\e[1;32mDownloading "$mirror"https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/$1\e[0m"
-		curl --connect-timeout 60 -m 900 --ipv4 -fSLo "$TMPDIR/$1" ""$mirror"https://github.com/Loyalsoldier/v2ray-rules-dat/releases/latest/download/$1"
+		echo -e "\e[1;32mDownloading "$mirror"https://github.com/MartialBE/v2dat_rule/releases/download/$1\e[0m"
+		curl --connect-timeout 60 -m 900 --ipv4 -fSLo "$TMPDIR/$1" ""$mirror"https://github.com/MartialBE/v2dat_rule/releases/download/$1"
 	)
 	TMPDIR=$(mktemp -d) || exit 1
-	geodat_download geoip.dat && geodat_download geosite.dat
+	geodat_download geoip_cn.txt && geodat_download geolocation-no-cn.txt && geodat_download geosite_cn.txt
 	if [ $? -ne 0 ]; then
 		rm -rf "$TMPDIR"
 		exit 1
 	fi
-	cp -f "$TMPDIR"/* /usr/share/v2ray
+	cp -f "$TMPDIR"/*.txt /etc/mosdns/rule
 	rm -rf "$TMPDIR"
 )
 

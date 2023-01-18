@@ -50,7 +50,7 @@ CHECK() (
 DOWNLOAD() (
 	echo -e "\r\n${GREEN_COLOR}Download Packages ...${RES}\r\n"
 	# get repos info
-	curl -sk --connect-timeout 10 "https://api.github.com/repos/sbwml/luci-app-mosdns/releases" | grep "browser_download_url" > $TMPDIR/releases.txt
+	curl -sk --connect-timeout 10 "https://api.github.com/repos/MartialBE/luci-app-mosdns/releases" | grep "browser_download_url" > $TMPDIR/releases.txt
 	if [ $? -ne 0 ]; then
 		echo -e "${RED_COLOR}Failed to get version information, Please check the network status.${RES}"
 		rm -rf $TMPDIR
@@ -59,8 +59,8 @@ DOWNLOAD() (
 	mosdns=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep $platform.ipk | head -1 | awk '{print $2}' | sed 's/\"//g')
 	luci_app=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep luci-app-mosdns_ | head -1 | awk '{print $2}' | sed 's/\"//g')
 	luci_i18n=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep luci-i18n-mosdns-zh-cn | head -1 | awk '{print $2}' | sed 's/\"//g')
-	geoip=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep v2ray-geoip | head -1 | awk '{print $2}' | sed 's/\"//g')
-	geosite=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep v2ray-geosite | head -1 | awk '{print $2}' | sed 's/\"//g')
+	# geoip=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep v2ray-geoip | head -1 | awk '{print $2}' | sed 's/\"//g')
+	# geosite=$(cat $TMPDIR/releases.txt | grep "browser_download_url" | grep v2ray-geosite | head -1 | awk '{print $2}' | sed 's/\"//g')
 
 	# download
 	echo -e "${GREEN_COLOR}Download $mosdns ...${RES}"
@@ -84,20 +84,20 @@ DOWNLOAD() (
 		rm -rf $TMPDIR
 		exit 1
 	fi
-	echo -e "${GREEN_COLOR}Download $geoip ...${RES}"
-	curl --connect-timeout 30 -m 600 -kLo "$TMPDIR/geoip.ipk" $mirror$geoip
-	if [ $? -ne 0 ]; then
-		echo -e "${RED_COLOR}Error! download $geoip failed.${RES}"
-		rm -rf $TMPDIR
-		exit 1
-	fi
-	echo -e "${GREEN_COLOR}Download $geosite ...${RES}"
-	curl --connect-timeout 30 -m 600 -kLo "$TMPDIR/geosite.ipk" $mirror$geosite
-	if [ $? -ne 0 ]; then
-		echo -e "${RED_COLOR}Error! download $geosite failed.${RES}"
-		rm -rf $TMPDIR
-		exit 1
-	fi
+	# echo -e "${GREEN_COLOR}Download $geoip ...${RES}"
+	# curl --connect-timeout 30 -m 600 -kLo "$TMPDIR/geoip.ipk" $mirror$geoip
+	# if [ $? -ne 0 ]; then
+	# 	echo -e "${RED_COLOR}Error! download $geoip failed.${RES}"
+	# 	rm -rf $TMPDIR
+	# 	exit 1
+	# fi
+	# echo -e "${GREEN_COLOR}Download $geosite ...${RES}"
+	# curl --connect-timeout 30 -m 600 -kLo "$TMPDIR/geosite.ipk" $mirror$geosite
+	# if [ $? -ne 0 ]; then
+	# 	echo -e "${RED_COLOR}Error! download $geosite failed.${RES}"
+	# 	rm -rf $TMPDIR
+	# 	exit 1
+	# fi
 )
 
 INSTALL() (
@@ -109,6 +109,8 @@ INSTALL() (
 	opkg install $TMPDIR/luci-app-mosdns.ipk
 	opkg install $TMPDIR/luci-i18n-mosdns-zh-cn.ipk
 	rm -rf $TMPDIR /tmp/luci-*
+	echo -e "\r\n${GREEN_COLOR}Downloading Rule ...${RES}\r\n"
+	/usr/share/mosdns/mosdns.sh geodata
 	echo -e "${GREEN_COLOR}Done!${RES}"
 )
 

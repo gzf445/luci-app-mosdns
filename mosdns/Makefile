@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mosdns
-PKG_VERSION:=5.0.0
+PKG_VERSION:=5.0.0-1
 PKG_RELEASE:=$(AUTORELEASE)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
-PKG_SOURCE_URL:=https://codeload.github.com/IrineSistiana/mosdns/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=05892a269535684e63667e7959f285bdcf59e88c0dba524764e1ee7396e04192
+PKG_SOURCE_URL:=https://codeload.github.com/MartialBE/mosdns/tar.gz/v$(PKG_VERSION)?
+PKG_HASH:=4df9915bc346fda9a69d7a4a7a9f413a9ec8030670811abf567e132516a4d187
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILE:=LICENSE
@@ -20,7 +20,7 @@ PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
 PKG_USE_MIPS16:=0
 
-GO_PKG:=github.com/IrineSistiana/mosdns
+GO_PKG:=github.com/MartialBE/mosdns
 GO_PKG_LDFLAGS_X:=main.version=v$(PKG_VERSION)
 
 include $(INCLUDE_DIR)/package.mk
@@ -31,7 +31,7 @@ define Package/mosdns
   CATEGORY:=Network
   SUBMENU:=IP Addresses and Names
   TITLE:=A plug-in DNS forwarder/splitter
-  URL:=https://github.com/IrineSistiana/mosdns
+  URL:=https://github.com/MartialBE/mosdns
   DEPENDS:=$(GO_ARCH_DEPENDS) +ca-bundle
 endef
 

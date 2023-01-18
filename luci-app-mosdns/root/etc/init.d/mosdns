@@ -48,7 +48,7 @@ get_config() {
 
 init_yaml() {
 	tmpdir=$(mktemp -d) || exit 1
-	adlist=$(/usr/share/mosdns/mosdns.sh ad)
+	# adlist=$(/usr/share/mosdns/mosdns.sh ad) s,adblock,$adlist,g;
 	[ $enable_pipeline = 1 ] && enable_pipeline=true || enable_pipeline=false
 	local_dns=$(/usr/share/mosdns/mosdns.sh dns | xargs -n1 echo "        - addr:")
 	remote_dns=$(echo $remote_dns | awk '{for(i=1;i<=NF;i++)printf "%s- addr: %s\n%s  enable_pipeline: '${enable_pipeline}'\n",s,$i,s}' s='        ')
@@ -57,7 +57,7 @@ init_yaml() {
 	s,cache_survival_time,$cache_survival_time,g; \
 	s,minimal_ttl_custom,$minimal_ttl_custom,g; \
 	s,maximum_ttl_custom,$maximum_ttl_custom,g; \
-	s,adblock,$adlist,g;s,remote_dns_pipeline,$enable_pipeline,g" \
+	s,remote_dns_pipeline,$enable_pipeline,g" \
 	/usr/share/mosdns/default.yaml > $CONF
 	[ "$custom_local_dns" -eq 0 ] && sed -i "/bootstrap/d" $CONF || \
 	sed -i "s,bootstrap_dns,$bootstrap_dns,g" $CONF
