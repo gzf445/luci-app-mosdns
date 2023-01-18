@@ -208,8 +208,8 @@ log:
       args:
         - exec: $hosts
         - exec: jump has_resp_sequence
-        - exec: $redirect
-        - exec: jump has_resp_sequence
+        # - exec: $redirect
+        # - exec: jump has_resp_sequence
         - exec: $query_is_whitelist_domain
         - exec: $query_is_reject_domain
         - exec: $cache
