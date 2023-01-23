@@ -32,14 +32,9 @@ interface_dns() (
 ad_block() (
 	adblock=$(uci -q get mosdns.config.adblock)
 	if [ "$adblock" -eq 1 ]; then
-		ad_source=$(uci -q get mosdns.config.ad_source)
-		if [ "$ad_source" = "geosite.dat" ]; then
-			echo "provider:geosite:category-ads-all"
-		else
-			echo "provider:adlist"
-		fi
+		echo "files:\n        - \"/etc/mosdns/rule/adlist.txt\"\n"
 	else
-		echo "full:disable-category-ads-all.null"
+		echo "exps:\n        - \"\"\n"
 	fi
 )
 
@@ -67,8 +62,8 @@ geodat_update() (
 	geodat_download() (
 		google_status=$(curl -I -4 -m 3 -o /dev/null -s -w %{http_code} http://www.google.com/generate_204)
 		[ "$google_status" -ne "204" ] && mirror="https://ghproxy.com/"
-		echo -e "\e[1;32mDownloading "$mirror"https://github.com/MartialBE/v2dat_rule/releases/download/$1\e[0m"
-		curl --connect-timeout 60 -m 900 --ipv4 -fSLo "$TMPDIR/$1" ""$mirror"https://github.com/MartialBE/v2dat_rule/releases/download/$1"
+		echo -e "\e[1;32mDownloading "$mirror"https://github.com/MartialBE/v2dat_rule/releases/latest/download/$1\e[0m"
+		curl --connect-timeout 60 -m 900 --ipv4 -fSLo "$TMPDIR/$1" ""$mirror"https://github.com/MartialBE/v2dat_rule/releases/latest/download/$1"
 	)
 	TMPDIR=$(mktemp -d) || exit 1
 	geodat_download geoip_cn.txt && geodat_download geolocation-no-cn.txt && geodat_download geosite_cn.txt
@@ -89,12 +84,16 @@ case $script_action in
 	;;
 	"geodata")
 		geodat_update && adlist_update
+		/etc/init.d/mosdns reload
 	;;
 	"logfile")
 		logfile_path
 	;;
 	"adlist_update")
 		adlist_update
+	;;
+	"geodat_update")
+		geodat_update
 	;;
 	*)
 		exit 0

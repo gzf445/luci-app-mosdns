@@ -107,8 +107,6 @@ INSTALL() (
 	opkg install $TMPDIR/luci-app-mosdns.ipk
 	opkg install $TMPDIR/luci-i18n-mosdns-zh-cn.ipk
 	rm -rf $TMPDIR /tmp/luci-*
-	echo -e "\r\n${GREEN_COLOR}Downloading Rule ...${RES}\r\n"
-	/usr/share/mosdns/mosdns.sh geodata
 	echo -e "${GREEN_COLOR}Done!${RES}"
 )
 

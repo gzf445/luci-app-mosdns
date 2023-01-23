@@ -48,7 +48,7 @@ get_config() {
 
 init_yaml() {
 	tmpdir=$(mktemp -d) || exit 1
-	# adlist=$(/usr/share/mosdns/mosdns.sh ad) s,adblock,$adlist,g;
+	adlist=$(/usr/share/mosdns/mosdns.sh ad)
 	[ $enable_pipeline = 1 ] && enable_pipeline=true || enable_pipeline=false
 	local_dns=$(/usr/share/mosdns/mosdns.sh dns | xargs -n1 echo "        - addr:")
 	remote_dns=$(echo $remote_dns | awk '{for(i=1;i<=NF;i++)printf "%s- addr: %s\n%s  enable_pipeline: '${enable_pipeline}'\n",s,$i,s}' s='        ')
@@ -57,6 +57,7 @@ init_yaml() {
 	s,cache_survival_time,$cache_survival_time,g; \
 	s,minimal_ttl_custom,$minimal_ttl_custom,g; \
 	s,maximum_ttl_custom,$maximum_ttl_custom,g; \
+	s,adblock_rule,$adlist,g; \
 	s,remote_dns_pipeline,$enable_pipeline,g" \
 	/usr/share/mosdns/default.yaml > $CONF
 	[ "$custom_local_dns" -eq 0 ] && sed -i "/bootstrap/d" $CONF || \
@@ -66,6 +67,23 @@ init_yaml() {
 	sed -i -e '/- addr: local_dns/{r '$tmpdir/local_dns.txt -e';d};/- addr: remote_dns/{r '$tmpdir/remote_dns.txt -e';d}' \
 	$CONF
 	rm -rf $tmpdir
+}
+
+
+init_rule() {
+	if [ ! -s /etc/mosdns/rule/geoip_cn.txt ]; then
+		/usr/share/mosdns/mosdns.sh geodat_update
+	fi
+
+	update_list=0
+	[ "$adblock" -eq 1 ] && {
+		[ -s "/etc/mosdns/rule/adlist.txt" ] && [ -f "/etc/mosdns/rule/.ad_source" ] && url_adlist=$(cat /etc/mosdns/rule/.ad_source) || update_list=1
+		[ "$ad_source" != "$url_adlist" ] && update_list=1
+	}
+
+	if [ "$update_list" -eq 1 ]; then
+		/usr/share/mosdns/mosdns.sh adlist_update
+	fi
 }
 
 service_triggers() {
@@ -127,7 +145,7 @@ start_service() {
 	[ $enabled != 1 ] && return 1
 	delcron
 	setcron
-	[ "${CONF}" = "/etc/mosdns/config.yaml" ] && init_yaml
+	[ "${CONF}" = "/etc/mosdns/config.yaml" ] && init_yaml && init_rule
 	:> $(/usr/share/mosdns/mosdns.sh logfile)
 	procd_open_instance mosdns
 	procd_set_param command $PROG start -c "$CONF"
@@ -139,12 +157,6 @@ start_service() {
 	[ "$redirect" -ne 1 ] && [ -f "/etc/mosdns/redirect.lock" ] && restore_setting
 	[ "$redirect" -eq 1 ] && redirect_setting
 	reload_others
-	update_list=0
-	[ "$adblock" -eq 1 ] && [ "$ad_source" != "geosite.dat" ] && {
-		[ -s "/etc/mosdns/rule/adlist.txt" ] && [ -f "/etc/mosdns/rule/.ad_source" ] && url_adlist=$(cat /etc/mosdns/rule/.ad_source) || update_list=1
-		[ "$ad_source" != "$url_adlist" ] && update_list=1
-	}
-	[ "$update_list" -eq 1 ] && /usr/share/mosdns/mosdns.sh adlist_update &> /dev/null &
 }
 
 stop_service() {
